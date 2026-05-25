@@ -1,316 +1,174 @@
-# AI CV & LinkedIn Analyzer
+# Mazen's LLM Prototype
 
-A simple full-stack web app that analyzes pasted CV text or uploaded PDF resumes using the Google Gemini API.
+A full-stack Next.js App Router prototype that analyzes pasted CV text and uploaded PDF resumes using the Google Gemini API.
 
-## Project Structure
+## Project Description
+
+This project helps users improve a CV or LinkedIn profile with AI-generated recruiter-style feedback. It supports both pasted text and PDF resume uploads, then returns structured feedback focused on summary improvement, ATS readiness, missing skills, wording quality, and interview preparation.
+
+## Features
+
+- Full-stack Next.js app deployable as one project on Vercel
+- App Router UI and API route in the same codebase
+- Paste CV text or LinkedIn summary into a textarea
+- Upload PDF resumes with drag-and-drop support
+- PDF size validation for Vercel-friendly uploads
+- Gemini-powered structured analysis
+- Result cards for:
+  - Overall Score
+  - Improved Summary
+  - Strengths
+  - Weaknesses
+  - Missing Skills
+  - ATS Suggestions
+  - Interview Preparation
+  - Rewritten Bullet Points
+  - Final Advice
+
+## Tech Stack
+
+- Next.js App Router
+- React
+- Google Gemini API
+- `@google/genai`
+- `pdf-parse`
+- Plain CSS
+
+## Architecture
 
 ```text
 CVanalyzer/
-├── backend/
-│   ├── package.json
-│   ├── .env
-│   ├── .env.example
-│   └── src/
-│       ├── analyzerService.js
-│       ├── apiError.js
-│       ├── pdfService.js
-│       ├── server.js
-│       └── uploadMiddleware.js
-├── frontend/
-│   ├── package.json
-│   ├── index.html
-│   └── src/
-│       ├── App.jsx
-│       ├── config.js
-│       ├── main.jsx
-│       ├── styles.css
-│       └── components/
-│           └── ResultCard.jsx
+├── app/
+│   ├── api/
+│   │   └── analyze/
+│   │       └── route.js
+│   ├── globals.css
+│   ├── layout.jsx
+│   └── page.jsx
+├── lib/
+│   ├── gemini.js
+│   └── pdf.js
+├── public/
+├── package.json
+├── next.config.js
+├── .env.local
+├── .env.example
 ├── README.md
 └── PROPOSAL.md
 ```
 
-## What The App Does
+Request flow:
 
-The app accepts either:
+1. The user pastes text or uploads a PDF on `app/page.jsx`.
+2. The frontend sends either JSON or `multipart/form-data` to `app/api/analyze/route.js`.
+3. The API route reads pasted text directly or extracts text from the PDF in `lib/pdf.js`.
+4. The extracted text is sent to Gemini through `lib/gemini.js`.
+5. Gemini returns structured JSON.
+6. The UI renders the analysis in cards.
 
-- Pasted CV text or LinkedIn summary
-- A PDF resume upload
+## Local Setup
 
-The backend then sends the content to Gemini and returns structured JSON with:
-
-- `overallScore`
-- `improvedSummary`
-- `strengths`
-- `weaknesses`
-- `missingSkills`
-- `atsSuggestions`
-- `interviewPreparation`
-- `rewrittenBulletPoints`
-- `finalAdvice`
-
-## PDF Support
-
-PDF upload support is now included in the backend and frontend.
-
-### How PDF Upload Works
-
-1. The frontend sends the selected PDF as `multipart/form-data`.
-2. The backend uses `multer` to accept the upload in memory.
-3. The backend validates that the file is a PDF.
-4. The backend uses `pdf-parse` to extract readable text from the file.
-5. The extracted text is sent to Gemini for the same analysis flow used by pasted text.
-6. The frontend displays the returned analysis in cards.
-
-### Supported Formats
-
-- `.pdf` only
-
-### File Size Limit
-
-- Maximum PDF size: `5MB`
-
-### Required Backend Packages
-
-- `multer`
-- `pdf-parse`
-- `express`
-- `cors`
-- `dotenv`
-- `@google/genai`
-
-## Why `npm install` Fails In The Root Folder
-
-The root folder does not contain a `package.json`, so there is nothing for npm to install there.
-
-This project has two separate apps:
-
-- `backend/`
-- `frontend/`
-
-Run `npm install` inside each one separately.
-
-## Why `cd frontend` Fails From Inside `backend`
-
-If your terminal is currently in:
-
-```text
-C:\Users\LOQ\Downloads\CVanalyzer\backend
-```
-
-then `frontend` is not inside that folder. It is next to it.
-
-Use:
+### 1. Install dependencies
 
 ```powershell
-cd ..\frontend
-```
-
-## Backend
-
-- Stack: Node.js + Express
-- Port: `5000`
-- Entry file: `backend/src/server.js`
-- Dev command: `npm run dev`
-- API route: `POST /api/analyze`
-
-### Backend Input Types
-
-The backend now supports:
-
-- `application/json` for pasted text
-- `multipart/form-data` for PDF uploads
-
-### JSON Example
-
-```json
-{
-  "text": "Junior software engineer with React and Node.js experience..."
-}
-```
-
-### Multipart Example
-
-Field name:
-
-```text
-pdf
-```
-
-### Backend Environment Variables
-
-Put your Gemini API key in:
-
-[backend/.env](c:/Users/LOQ/Downloads/CVanalyzer/backend/.env)
-
-Example:
-
-```env
-GEMINI_API_KEY=your_real_gemini_api_key_here
-PORT=5000
-```
-
-Template file:
-
-[backend/.env.example](c:/Users/LOQ/Downloads/CVanalyzer/backend/.env.example)
-
-## Frontend
-
-- Stack: React + Vite
-- Port: `5173`
-- Dev command: `npm run dev`
-- API target: `http://localhost:5000/api/analyze`
-
-The frontend supports:
-
-- textarea input
-- PDF file input
-- drag-and-drop upload
-- loading states for extraction and analysis
-
-## How To Create The `.env` File
-
-If `backend/.env` does not exist, run:
-
-```powershell
-cd C:\Users\LOQ\Downloads\CVanalyzer\backend
-copy .env.example .env
-```
-
-Then open the file and set:
-
-```env
-GEMINI_API_KEY=your_real_gemini_api_key_here
-```
-
-## How To Get A Gemini API Key
-
-1. Open `https://aistudio.google.com/`
-2. Sign in with your Google account
-3. Create an API key
-4. Paste it into `backend/.env`
-
-## Exact Installation Commands
-
-### Backend
-
-```powershell
-cd C:\Users\LOQ\Downloads\CVanalyzer\backend
+cd C:\Users\LOQ\Downloads\CVanalyzer
 npm install
 ```
 
-### Frontend
+### 2. Create local environment file
 
-```powershell
-cd C:\Users\LOQ\Downloads\CVanalyzer\frontend
-npm install
+If `.env.local` does not exist yet, create it in the root folder:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-## Exact Commands To Run The Project
+There is also a template file:
 
-### Terminal 1: Backend
+```text
+.env.example
+```
+
+### 3. Start the app
 
 ```powershell
-cd C:\Users\LOQ\Downloads\CVanalyzer\backend
+cd C:\Users\LOQ\Downloads\CVanalyzer
 npm run dev
 ```
 
-Backend URL:
+Open:
 
 ```text
-http://localhost:5000
+http://localhost:3000
 ```
 
-### Terminal 2: Frontend
+## Gemini API Key Setup
 
-```powershell
-cd C:\Users\LOQ\Downloads\CVanalyzer\frontend
-npm run dev
+1. Go to Google AI Studio: https://aistudio.google.com/
+2. Create a Gemini API key.
+3. Put the key in root `.env.local` as:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-Frontend URL:
+Important:
 
-```text
-http://localhost:5173
+- The API key is only used in server code.
+- The frontend never receives the Gemini API key.
+- No `VITE_API_URL` or separate backend URL is needed.
+
+## PDF Upload Limitations
+
+- Supported format: PDF only
+- Maximum size: 4MB
+- Image-only or scanned PDFs may fail if no readable text can be extracted
+- Corrupted PDFs return a friendly error message
+
+The 4MB limit is used to stay safer with Vercel serverless request limits.
+
+## Vercel Deployment
+
+1. Push the repository to GitHub.
+2. Import the repository into Vercel.
+3. Choose the framework preset: `Next.js`.
+4. Leave the Root Directory empty because the Next.js app is now in the repository root.
+5. Add this environment variable in Vercel:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
-## How To Test The App
+6. Deploy.
 
-1. Start the backend.
-2. Start the frontend in a second terminal.
-3. Open `http://localhost:5173`.
-4. Either paste CV text or upload a PDF file.
-5. Click `Analyze`.
-6. Review the result cards below the form.
+Deployment notes:
 
-You can also test the backend health route:
-
-```text
-http://localhost:5000/api/health
-```
-
-Expected response:
-
-```json
-{"ok":true}
-```
-
-## Example API Response
-
-```json
-{
-  "overallScore": 78,
-  "improvedSummary": "Junior software engineer with hands-on experience building full-stack web applications using React and Node.js, supported by a solid understanding of APIs and modern JavaScript development.",
-  "strengths": [
-    "Relevant full-stack foundation",
-    "Clear exposure to React and Node.js",
-    "Shows practical project experience"
-  ],
-  "weaknesses": [
-    "Limited measurable outcomes",
-    "Profile may need stronger ATS keywords"
-  ],
-  "missingSkills": [
-    "TypeScript",
-    "Testing frameworks",
-    "CI/CD basics"
-  ],
-  "atsSuggestions": [
-    "Add a dedicated technical skills section",
-    "Use role-specific keywords from target jobs"
-  ],
-  "interviewPreparation": [
-    "Prepare to explain your main projects clearly",
-    "Review JavaScript, APIs, and React fundamentals"
-  ],
-  "rewrittenBulletPoints": [
-    "Built responsive full-stack applications using React and Node.js for academic and personal projects.",
-    "Developed backend API endpoints and integrated them with frontend user interfaces."
-  ],
-  "finalAdvice": "Focus on measurable impact, stronger technical keywords, and clearer project outcomes."
-}
-```
+- No separate Express backend is needed.
+- No Render deployment is needed.
+- No backend API URL configuration is needed.
+- No `VITE_API_URL` is needed.
 
 ## Troubleshooting
 
-- `npm install` in root fails:
-  Run installs only inside `backend` and `frontend`.
-- `cd frontend` fails from backend:
-  Use `cd ..\frontend`.
-- `EADDRINUSE: address already in use :::5000`:
-  Another process is already using port `5000`. Stop that process, then run the backend again.
-- PDF upload says unsupported file:
-  Make sure the file extension is `.pdf`.
-- PDF upload says file too large:
-  Keep the file under `5MB`.
-- PDF upload says it cannot read the file:
-  The PDF may be corrupted, scanned as an image, or missing readable text.
-- Gemini analysis fails:
-  Check that `GEMINI_API_KEY` is set correctly in `backend/.env`.
+- `npm install` fails in the old root setup:
+  This migration adds a real root `package.json`, so install from the root now.
+- `npm run dev` does not start:
+  Make sure dependencies were installed in the root folder, not only in `frontend` or `backend`.
+- Gemini errors:
+  Verify that `GEMINI_API_KEY` is set in `.env.local` or in Vercel project settings.
+- PDF upload rejected:
+  Make sure the file is a PDF and under 4MB.
+- PDF upload succeeds but analysis fails:
+  The PDF may be image-only, scanned, empty, or corrupted.
 
-## Notes
+## Proposal Summary
 
-- The Gemini API key stays on the backend only.
-- The frontend never receives the API key.
-- Text analysis and PDF analysis both use the same Gemini prompt and response format.
-- The backend includes safe JSON parsing in case Gemini returns extra formatting.
+This is a valid LLM use case because CV review is language-heavy, context-sensitive, and benefits from nuanced coaching rather than rigid rules alone. The app turns unstructured candidate input into predictable structured output, making the feedback useful both to users and to the UI.
+
+## Safe Cleanup After Migration
+
+After verifying the root Next.js app works, these old folders can be deleted safely because they are no longer needed for local development or Vercel deployment:
+
+- `frontend/`
+- `backend/`
+

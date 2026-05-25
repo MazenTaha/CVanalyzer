@@ -1,60 +1,63 @@
-# Proposal: AI CV & LinkedIn Profile Analyzer
+# Proposal: Mazen's LLM Prototype
 
 ## 1. Introduction
 
-The AI CV & LinkedIn Profile Analyzer is a lightweight web application that helps users improve the quality of their professional profiles using an LLM. It focuses on practical, fast feedback that can support job seekers during CV writing and LinkedIn optimization.
+Mazen's LLM Prototype is a full-stack Next.js application that helps users improve CVs and LinkedIn profiles using the Google Gemini API. It is designed as a clean, deployable prototype that combines frontend and backend logic in one codebase.
 
 ## 2. Problem Statement
 
-Job seekers often submit CVs and LinkedIn profiles that are technically correct but weak in clarity, ATS formatting, keyword usage, or positioning. Many users do not know how recruiters interpret their profiles, and professional review services may be expensive or unavailable.
+Many job seekers struggle to understand whether their CV or LinkedIn profile is clear, ATS-friendly, technically convincing, and interview-ready. Professional feedback is helpful, but it is often expensive, slow, or unavailable.
 
 ## 3. Proposed Solution
 
-The proposed solution is a simple web app where the user pastes CV text or a LinkedIn summary into a form. The backend sends that text to the Google Gemini API with a structured prompt and returns analysis in machine-readable JSON. The frontend then displays the output in clearly labeled sections.
+The proposed solution is a full-stack Next.js app where a user can either paste CV or LinkedIn text or upload a PDF resume. The app extracts text when needed, sends it to Gemini, and returns structured recruiter-style feedback that is easy to read and act on.
 
 ## 4. Target Users
 
 - Junior software engineers
 - Computer science students
-- Early-career developers
-- Job seekers improving LinkedIn profiles
-- Supervisors or instructors evaluating LLM prototype use cases
+- Early-career job seekers
+- Users improving LinkedIn summaries
+- Supervisors evaluating an LLM prototype for career support
 
 ## 5. Why LLM Is Useful Here
 
-This problem is well suited to an LLM because:
+This is a strong LLM use case because:
 
-- CV and profile review is mostly language-based
-- Feedback needs interpretation, rewriting, and judgment
-- The same text can be improved in multiple useful ways
-- Users benefit from natural-language coaching rather than keyword matching alone
-- Structured JSON allows LLM creativity while keeping output predictable for the UI
+- CV review is heavily language-based
+- Good feedback requires interpretation, rewriting, and judgment
+- ATS optimization depends on wording and keyword alignment
+- Missing skills and interview advice are easier to generate with contextual reasoning
+- Structured JSON keeps the output predictable for application use
 
-## 6. Chosen Free API Provider
+## 6. Chosen API Provider
 
-Google Gemini API is used as the LLM provider for this prototype. It is suitable for free-tier prototyping, accessible through Google AI Studio, and offers an official JavaScript SDK for backend integration.
+Google Gemini API is the chosen LLM provider. It offers a practical free-tier entry point for prototyping and supports structured output through the official JavaScript SDK.
 
 ## 7. System Architecture
 
 ```text
-Frontend (React + Vite)
-        |
-        v
-Backend API (Node.js + Express)
-        |
-        v
-Google Gemini API
+Next.js Frontend + API Route
+           |
+           v
+      Gemini API
 ```
+
+Supporting modules:
+
+- `lib/gemini.js` for prompt construction and safe JSON parsing
+- `lib/pdf.js` for PDF text extraction and validation
 
 ## 8. Workflow
 
-1. User pastes CV text or LinkedIn summary into the frontend.
-2. User clicks the Analyze button.
-3. Frontend sends the text to the backend using `POST /api/analyze`.
-4. Backend validates that the text is not empty.
-5. Backend prompts Gemini to return structured JSON only.
-6. Backend parses and normalizes the response.
-7. Frontend shows the results in organized cards.
+1. The user opens the Next.js app.
+2. The user either pastes CV/LinkedIn text or uploads a PDF resume.
+3. The UI sends the request to `app/api/analyze/route.js`.
+4. The API route validates the input.
+5. If a PDF is uploaded, the app extracts readable text from the file.
+6. The text is sent to Gemini with a structured analysis prompt.
+7. Gemini returns JSON feedback.
+8. The app displays the results as cards on the page.
 
 ## 9. Expected Output
 
@@ -64,29 +67,29 @@ The system returns:
 - Improved professional summary
 - Strengths
 - Weaknesses
-- Missing technical skills
-- ATS optimization suggestions
+- Missing skills
+- ATS suggestions
 - Interview preparation advice
 - Rewritten bullet points
 - Final advice
 
 ## 10. Limitations
 
-- Output quality depends on the pasted text quality
-- AI feedback may not fully match every industry or hiring manager
-- No file upload or document parsing in this prototype
-- No job-description matching in the first version
+- Output quality depends on the quality of the pasted or extracted text
+- Image-only scanned PDFs may not provide readable text
+- AI feedback may not perfectly match every recruiter or industry
 - Free-tier API limits may apply
+- This prototype does not yet tailor advice to a specific job description
 
 ## 11. Future Enhancements
 
-- Add PDF and DOCX upload support
-- Add job description comparison
-- Add role-specific analysis templates
-- Add exportable reports
-- Add analytics dashboard
-- Add multilingual support
+- Job description matching
+- Section-by-section scoring
+- DOCX upload support
+- Exportable reports
+- Multi-language analysis
+- Saved analysis history
 
 ## 12. Conclusion
 
-This project is a valid and practical LLM prototype because it solves a real communication-heavy problem, uses structured AI output, protects the API key on the server, and demonstrates clear value with a minimal full-stack architecture.
+This project is a valid full-stack Next.js LLM prototype because it solves a real communication-heavy problem, keeps the Gemini API key on the server, supports both pasted text and PDF resumes, and provides practical ATS suggestions, missing skills guidance, and interview preparation feedback in a single Vercel-deployable app.
