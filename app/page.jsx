@@ -164,7 +164,6 @@ export default function HomePage() {
             <div className="input-grid">
               <div className="input-column">
                 <div className="input-header">
-                  <span className="input-step">Option 1</span>
                   <label className="field-label" htmlFor="profileText">
                     Paste CV or LinkedIn Text
                   </label>
@@ -184,7 +183,6 @@ export default function HomePage() {
 
               <div className="input-column">
                 <div className="input-header">
-                  <span className="input-step">Option 2</span>
                   <label className="field-label" htmlFor="resumePdf">
                     Upload PDF Resume
                   </label>
@@ -296,4 +294,3 @@ export default function HomePage() {
     </div>
   );
 }
-
