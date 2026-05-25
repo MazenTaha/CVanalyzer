@@ -87,6 +87,20 @@ export default function HomePage() {
     }
   }
 
+  async function parseApiResponse(response) {
+    const contentType = response.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      return response.json();
+    }
+
+    const textBody = await response.text();
+
+    return {
+      error: textBody || "The server returned an unexpected response."
+    };
+  }
+
   async function handleAnalyze(event) {
     event.preventDefault();
 
@@ -128,7 +142,7 @@ export default function HomePage() {
         });
       }
 
-      const data = await response.json();
+      const data = await parseApiResponse(response);
 
       if (!response.ok) {
         throw new Error(data.error || "Analysis failed.");
@@ -136,7 +150,13 @@ export default function HomePage() {
 
       setResult(data);
     } catch (requestError) {
-      setError(requestError.message || "Something went wrong while analyzing.");
+      if (requestError instanceof TypeError) {
+        setError(
+          "Unable to reach the analysis service. Please make sure the app is running and check the server logs."
+        );
+      } else {
+        setError(requestError.message || "Something went wrong while analyzing.");
+      }
     } finally {
       if (loadingTimerId) {
         window.clearTimeout(loadingTimerId);
